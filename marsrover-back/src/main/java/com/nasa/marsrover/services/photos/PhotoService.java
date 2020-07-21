@@ -25,11 +25,15 @@ public class PhotoService {
    */
   public Mono<byte[]> getPhoto(String imgSrc) throws IOException {
     final String sha = DigestUtils.sha512Hex(imgSrc);
+    final String directoryName =
+        Objects.requireNonNull(getClass().getClassLoader().getResource(".")).getFile() + "images/";
     final String imageFileName = // Cache the file in resources folder
-        Objects.requireNonNull(getClass().getClassLoader().getResource(".")).getFile()
-            + "images/"
-            + sha
-            + ".jpg";
+        directoryName + sha + ".jpg";
+
+    File directory = new File(directoryName);
+    if (!directory.exists()) {
+      directory.mkdir();
+    }
 
     File file = new File(imageFileName);
 

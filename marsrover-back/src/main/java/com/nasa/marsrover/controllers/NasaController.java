@@ -27,7 +27,7 @@ public class NasaController {
   }
 
   @GetMapping("getPhotoInfo")
-  public Mono<RoverPictureResponse> getPhotos(@RequestParam("date") String date) {
+  public Mono<RoverPictureResponse> getPhotoInfo(@RequestParam("date") String date) {
     return nasaClient.getRoverPictures(DateParser.parseDate(date));
   }
 
