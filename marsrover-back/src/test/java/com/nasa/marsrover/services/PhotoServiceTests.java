@@ -1,5 +1,7 @@
 package com.nasa.marsrover.services;
 
+import com.nasa.marsrover.services.photos.PhotoService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
