@@ -7,7 +7,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.web.reactive.config.ResourceHandlerRegistry;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -30,9 +30,22 @@ public class AppConfig {
     return new NasaConfig(NASA_BASE_URL, NASA_API_KEY);
   }
 
+  /**
+   * Handle responses up to 16 MB
+   *
+   * @return
+   */
   @Bean
   public WebClient nasaWebClient() {
-    return WebClient.create(NASA_BASE_URL);
+    return WebClient.builder()
+        .exchangeStrategies(
+            ExchangeStrategies.builder()
+                .codecs(
+                    clientCodecConfigurer ->
+                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
+                .build())
+        .baseUrl(NASA_BASE_URL)
+        .build();
   }
 
   @Bean

@@ -15,7 +15,7 @@ import java.time.LocalDate;
 
 /** Nasa endpoint controller */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/nasa")
 @Slf4j
 public class NasaController {
   private NasaClient nasaClient;

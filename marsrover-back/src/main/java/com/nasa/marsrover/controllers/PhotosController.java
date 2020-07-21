@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/photos")
 @Slf4j
 public class PhotosController {
   private PhotoService service;
@@ -24,7 +24,7 @@ public class PhotosController {
     this.service = service;
   }
 
-  @GetMapping(value = "/photo", produces = MediaType.IMAGE_JPEG_VALUE)
+  @GetMapping(value = "/get", produces = MediaType.IMAGE_JPEG_VALUE)
   public ResponseEntity<Mono<byte[]>> getImgUrl(@RequestParam("img_src") String imgSrc)
       throws IOException {
     Mono<byte[]> photo = service.getPhoto(imgSrc);

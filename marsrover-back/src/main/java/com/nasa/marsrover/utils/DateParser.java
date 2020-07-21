@@ -11,7 +11,8 @@ public class DateParser {
       new DateTimeFormatter[] {
         DateTimeFormatter.ofPattern("MM/dd/uu").withResolverStyle(ResolverStyle.STRICT),
         DateTimeFormatter.ofPattern("MMMM d, uuuu").withResolverStyle(ResolverStyle.STRICT),
-        DateTimeFormatter.ofPattern("MMM-dd-uuuu").withResolverStyle(ResolverStyle.STRICT)
+        DateTimeFormatter.ofPattern("MMM-dd-uuuu").withResolverStyle(ResolverStyle.STRICT),
+        DateTimeFormatter.ofPattern("uuuu-MM-dd").withResolverStyle(ResolverStyle.STRICT),
       };
 
   /**
