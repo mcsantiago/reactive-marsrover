@@ -1,5 +1,21 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+This is the front end component for the Mars Rover Photo Album! Simple application that calls the backend and retrieves the photos taken for a specific day.
+
+## Docker
+To build docker container, simply 
+```
+docker build -t marsrover:front .
+docker run \
+    -it \
+    --rm \
+    -v ${PWD}:/app \
+    -v /app/node_modules \
+    -p 3001:3000 \
+    -e CHOKIDAR_USEPOLLING=true \
+    marsrover:front
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
