@@ -21,3 +21,25 @@ Here is an <https://github.com/jlowery457/nasa-exercise | example> of this exerc
 * Triple Bonus – Have it run in a Docker or K8s (Preferable)
 
 ## Implementation
+
+This project features a highly scalable backend featuring reactive data streams. The REST API exposes a few endpoints:
+
+    - `GET /api/v1/nasa/getPhotoInfo?date={date}` - Where date takes on the yyyy-MM-dd format (i.e. 2020-07-21). Other formats including `07/21/2020` and `Jul-21-2020` are supported.
+    - `GET /api/v1/nasa/getPhotosFromFile` - This endpoint reads a predefined dates.txt resource file described above. This is for demo purposes to showcase the flexibility of the controller and different date formats.
+    - `GET /api/v1/photos/get?imgSrc={url}` - This endpoint serves the image associated with that url. The backend also caches this image in order to improve performance. 
+
+## Installation 
+
+To run this project locally, just call:
+
+```
+./mvnw spring-boot:run
+```
+
+For Dockerfile build (TODO: create rebuild scripts):
+
+```
+./mvnw package
+docker build -t demo/marsrover .
+docker run -p 8080:8080 demo/marsrover
+```
