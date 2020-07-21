@@ -19,6 +19,29 @@ class App extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.onFormSubmit = this.onFormSubmit.bind(this);
 
+    axios.get('http://localhost:8080/api/v1/nasa/getPhotoInfo', {
+      params: {
+        date: formatDate(this.state.startDate)
+      },
+      headers: {
+      }
+    }).then(
+      res => res.data
+    ).then(data => {
+      let photos = [];
+      console.log(data);
+      for (let index = 0; index < data.photos.length; index++) {
+        let photo = {
+          src: "http://localhost:8080/api/v1/photos/get?img_src=" + data.photos[index].img_src,
+          width: 4,
+          height: 3
+        };
+        photos.push(photo);
+      }
+      this.setState({
+        photoSet: photos
+      })
+    }).catch((error) => console.error(error));
   }
 
 
@@ -92,7 +115,7 @@ class App extends Component {
           </div>
         </form>
 
-        <h1>Curiousity</h1>
+        <h2>Curiosity Photos</h2>
         <Gallery photos={this.state.photoSet} />
       </div>
     );

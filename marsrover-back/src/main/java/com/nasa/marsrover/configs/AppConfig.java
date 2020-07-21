@@ -45,7 +45,7 @@ public class AppConfig {
             ExchangeStrategies.builder()
                 .codecs(
                     clientCodecConfigurer ->
-                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(512 * 1024 * 1024))
+                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(512 * 1024))
                 .build())
         .baseUrl(NASA_BASE_URL)
         .build();

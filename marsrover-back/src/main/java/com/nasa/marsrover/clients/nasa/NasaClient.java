@@ -9,6 +9,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
@@ -84,17 +85,39 @@ public class NasaClient {
             .clientConnector(
                 new ReactorClientHttpConnector(HttpClient.create().followRedirect(true)))
             .baseUrl(url)
+            .exchangeStrategies(
+                ExchangeStrategies.builder()
+                    .codecs(
+                        clientCodecConfigurer ->
+                            clientCodecConfigurer
+                                .defaultCodecs()
+                                .maxInMemorySize(512 * 1024 * 1024))
+                    .build())
             .build();
 
     return client.get().accept(MediaType.APPLICATION_XML).retrieve().bodyToMono(byte[].class).log();
   }
 
+  /**
+   * Obtains the databuffer for async file writing
+   *
+   * @param url
+   * @return
+   */
   public Flux<DataBuffer> getPhotoBuffer(String url) {
     WebClient client =
         WebClient.builder()
             .clientConnector(
                 new ReactorClientHttpConnector(HttpClient.create().followRedirect(true)))
             .baseUrl(url)
+            .exchangeStrategies(
+                ExchangeStrategies.builder()
+                    .codecs(
+                        clientCodecConfigurer ->
+                            clientCodecConfigurer
+                                .defaultCodecs()
+                                .maxInMemorySize(512 * 1024 * 1024))
+                    .build())
             .build();
 
     return client
