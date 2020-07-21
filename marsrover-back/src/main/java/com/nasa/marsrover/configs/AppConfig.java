@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 public class AppConfig {
@@ -31,7 +34,7 @@ public class AppConfig {
   }
 
   /**
-   * Handle responses up to 16 MB
+   * Handle responses up to 512 KB
    *
    * @return
    */
@@ -42,7 +45,7 @@ public class AppConfig {
             ExchangeStrategies.builder()
                 .codecs(
                     clientCodecConfigurer ->
-                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
+                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(512 * 1024 * 1024))
                 .build())
         .baseUrl(NASA_BASE_URL)
         .build();
@@ -51,5 +54,19 @@ public class AppConfig {
   @Bean
   public PhotoService photoService() {
     return new PhotoService();
+  }
+
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry
+            .addMapping("/**")
+            .allowedMethods("GET", "POST", "PUT", "DELETE")
+            .allowedOrigins("*")
+            .allowedHeaders("*");
+      }
+    };
   }
 }

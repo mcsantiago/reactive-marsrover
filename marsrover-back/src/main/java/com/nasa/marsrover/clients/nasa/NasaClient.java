@@ -78,7 +78,18 @@ public class NasaClient {
    * @param url
    * @return
    */
-  public Flux<DataBuffer> getPhoto(String url) {
+  public Mono<byte[]> getPhotoBytes(String url) {
+    WebClient client =
+        WebClient.builder()
+            .clientConnector(
+                new ReactorClientHttpConnector(HttpClient.create().followRedirect(true)))
+            .baseUrl(url)
+            .build();
+
+    return client.get().accept(MediaType.APPLICATION_XML).retrieve().bodyToMono(byte[].class).log();
+  }
+
+  public Flux<DataBuffer> getPhotoBuffer(String url) {
     WebClient client =
         WebClient.builder()
             .clientConnector(

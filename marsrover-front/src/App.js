@@ -12,36 +12,48 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      startDate: new Date()
+      startDate: new Date(),
+      photoSet: []
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.onFormSubmit = this.onFormSubmit.bind(this);
+
   }
 
-  handleChange(date) {
+
+  async handleChange(date) {
     this.setState({
       startDate: date
-    })
+    });
+    const response = await axios.get('http://localhost:8080/api/v1/nasa/getPhotoInfo', {
+      params: {
+        date: formatDate(this.state.startDate)
+      },
+      headers: {
+      }
+    }).then(
+      res => res.data
+    ).then(data => {
+      let photos = [];
+      console.log(data);
+      for (let index = 0; index < data.photos.length; index++) {
+        let photo = {
+          src: "http://localhost:8080/api/v1/photos/get?img_src=" + data.photos[index].img_src,
+          width: 4,
+          height: 3
+        };
+        photos.push(photo);
+      }
+      this.setState({
+        photoSet: photos
+      })
+    }).catch((error) => console.error(error));
   }
 
   async onFormSubmit(e) {
-    try {
-      console.log(formatDate(this.state.date));
-      const response = await axios.get('localhost:8080/picture', {
-        params: {
-          date: formatDate(this.state.startDate),
-          hd: false
-        }
-      }).then(
-        () => console.log(response)
-      );
-      this.PHOTO_SET = response.data;
-    } catch (error) {
-      console.error(error);
-    }
     e.preventDefaultBehavior();
-    console.log(this.state.startDate)
+    console.log(this.state.startDate);
   }
 
   PHOTO_SET = [
@@ -81,7 +93,7 @@ class App extends Component {
         </form>
 
         <h1>Curiousity</h1>
-        <Gallery photos={this.PHOTO_SET} />
+        <Gallery photos={this.state.photoSet} />
       </div>
     );
   }

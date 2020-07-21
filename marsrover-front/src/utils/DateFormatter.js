@@ -3,7 +3,6 @@
  * @param {javascript date} date 
  */
 function formatDate(date) {
-  console.log(date);
   var d = new Date(date),
     month = '' + (d.getMonth() + 1),
     day = '' + d.getDate(),

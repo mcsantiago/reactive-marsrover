@@ -37,7 +37,7 @@ public class PhotoService {
       log.trace("File {} NOT found in cache, requesting from {}", imageFileName, imgSrc);
       AsynchronousFileChannel asynchronousFileChannel =
           AsynchronousFileChannel.open(file.toPath(), StandardOpenOption.WRITE);
-      return DataBufferUtils.write(nasaClient.getPhoto(imgSrc), asynchronousFileChannel)
+      DataBufferUtils.write(nasaClient.getPhotoBuffer(imgSrc), asynchronousFileChannel)
           .doOnNext(DataBufferUtils.releaseConsumer())
           .doAfterTerminate(
               () -> {
@@ -46,7 +46,8 @@ public class PhotoService {
                 } catch (IOException ignored) {
                 }
               })
-          .then(Mono.just(Files.readAllBytes(file.toPath())));
+          .subscribe();
+      return nasaClient.getPhotoBytes(imgSrc);
     } else {
       log.trace("File {} found in cache", imageFileName);
       return Mono.just(Files.readAllBytes(file.toPath()));

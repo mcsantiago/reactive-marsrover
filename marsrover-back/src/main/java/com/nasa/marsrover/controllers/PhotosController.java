@@ -24,6 +24,7 @@ public class PhotosController {
     this.service = service;
   }
 
+  @CrossOrigin(origins = {"http://localhost:3000"})
   @GetMapping(value = "/get", produces = MediaType.IMAGE_JPEG_VALUE)
   public ResponseEntity<Mono<byte[]>> getImgUrl(@RequestParam("img_src") String imgSrc)
       throws IOException {
