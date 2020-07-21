@@ -2,7 +2,7 @@ package com.nasa.marsrover.clients.nasa;
 
 import com.nasa.marsrover.clients.nasa.models.NasaConfig;
 import com.nasa.marsrover.clients.nasa.models.RoverPictureResponse;
-import lombok.SneakyThrows;
+import com.nasa.marsrover.utils.DateParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -21,9 +21,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Objects;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 /** Service class responsible for making calls to the Nasa API */
 @Slf4j
@@ -49,14 +48,14 @@ public class NasaClient {
         .uri(
             uriBuilder ->
                 uriBuilder
-                    .path("mars-photos/api/v1/rovers/curiousity/photos")
+                    .path("mars-photos/api/v1/rovers/curiosity/photos")
                     .queryParam("earth_date", date.toString())
                     .queryParam("api_key", config.getApiKey())
                     .build())
         .accept(MediaType.APPLICATION_JSON)
         .retrieve()
         .onStatus(
-            HttpStatus::is4xxClientError, // TODO: Handle internal server error
+            HttpStatus::is4xxClientError, // TODO: Handle internal server error (status code 5xx)
             response ->
                 Mono.error(
                     WebClientResponseException.create(
@@ -87,34 +86,35 @@ public class NasaClient {
             .baseUrl(url)
             .build();
 
-    return client.get().accept(MediaType.APPLICATION_XML).retrieve().bodyToFlux(DataBuffer.class);
+    return client
+        .get()
+        .accept(MediaType.APPLICATION_XML)
+        .retrieve()
+        .bodyToFlux(DataBuffer.class)
+        .log();
   }
 
   /**
-   * Reads the dates.txt file and streams the
+   * Reads the dates.txt file and streams the responses
    *
    * @return
    * @throws IOException
    */
-  public Flux<RoverPictureResponse> getRoverPictureFromFile() throws IOException {
-    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    InputStream inputStream = classloader.getResourceAsStream("dates.txt");
+  public Flux<RoverPictureResponse> getRoverPictureFromFile(InputStream inputStream)
+      throws IOException {
     InputStreamReader streamReader =
         new InputStreamReader(Objects.requireNonNull(inputStream), StandardCharsets.UTF_8);
     BufferedReader reader = new BufferedReader(streamReader);
-    return Flux.fromStream(
-        Stream.generate(
-            new Supplier<RoverPictureResponse>() {
-              @SneakyThrows
-              @Override
-              public RoverPictureResponse get() {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                  // Process line
-                  // TODO:
-                }
-                return null;
-              }
-            }));
+    String line;
+    ArrayList<Mono<RoverPictureResponse>> responseCollection = new ArrayList<>();
+    while ((line = reader.readLine()) != null) {
+      try {
+        LocalDate date = DateParser.parseDate(line);
+        responseCollection.add(getRoverPictures(date));
+      } catch (IllegalArgumentException ignore) {
+      }
+    }
+
+    return Flux.concat(responseCollection);
   }
 }
